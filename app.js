@@ -1,3 +1,4 @@
+
 let Joi = require('joi') //导入joi模块,做input validaion
 let express = require('express')
 let app = express()
@@ -79,4 +80,4 @@ app.delete('/api/items/:id', (req, res) => {
 
 
 let port = process.env.PORT || 8000
-app.listen(port, () => console.log('node server start'))
+app.listen(port, () => console.log(`api app start, port ${port}`))
