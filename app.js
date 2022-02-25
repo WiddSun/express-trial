@@ -2,7 +2,7 @@ let Joi = require('joi') //导入joi模块,做input validaion
 let express = require('express')
 let app = express()
 
-//加一个中间件,其作用是解析请求体的json格式数据,使得可以通过req.body.name来引用
+//加一个中间件,其作用是解析请求体的json格式数据,使得可以通过req.body.name来引用
 app.use(express.json())
 //用一个数组暂时代替数据库来存数据
 let items = [
@@ -53,6 +53,7 @@ app.put('/api/items/:id', (req, res) => {
     res.send('item updated successfully')
 
 })
+//holy crap
 
 //提取出post和put中重复代码,封装成该验证函数
 function validateItem(item) {
