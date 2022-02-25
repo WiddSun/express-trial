@@ -4,7 +4,7 @@ let app = express()
 
 //加一个中间件,其作用是解析请求体的json格式数据,使得可以通过req.body.name来引用
 app.use(express.json())
-
+//如一个数组暂时代替数据库来存数据
 let items = [
     { id: 1, name: 'apple' },
     { id: 2, name: 'orange' },
@@ -29,18 +29,6 @@ app.get('/api/items/:id', (req, res) => {
 
 
 app.post('/api/items', (req, res) => {
-    //input validation, always do server-side input validation besides client-side validation
-    //direct validation without third party library
-    // if (!req.body.name || req.body.name.length < 3) {
-    //     res.status(400).send('name is required and should be 3 chars at least')
-    // }
-    //validation with Joi, 便于做复杂验证,避免直接写时if条件段太过冗长
-    // let schema = {
-    //     name: Joi.string()
-    //         .min(3)
-    //         .alphanum()
-    //         .required()
-    // }
     let { error } = validateItem(req.body) //对象解构赋值, es6的语法
     if (error) return res.status(400).send(error.details[0].message)
     //save posted data 
@@ -58,13 +46,6 @@ app.put('/api/items/:id', (req, res) => {
     //先验证要修改的项目是否存在, 不存在则返回404,存在则下一步, 复制相应get请求代码即可
     let item = items.find(i => i.id == req.params.id)
     if (!item) return res.status(404).send('no such item')
-    //项目存在,再验证提交的修改数据是否合要求, 复制相应post请求代码即可
-    // let schema = {
-    //     name: Joi.string()
-    //         .min(3)
-    //         .alphanum()
-    //         .required()
-    // }
     let { error } = validateItem(req.body) 
     if (error) return res.status(400).send(error.details[0].message)
     //项目存在,且提交的数据合法,执行赋值更新操作即可
@@ -72,6 +53,7 @@ app.put('/api/items/:id', (req, res) => {
     res.send('item updated successfully')
 
 })
+//holy crap
 
 //提取出post和put中重复代码,封装成该验证函数
 function validateItem(item) {
