@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    test page
+    <script>
+        const url = 'http://localhost:8000/api/items'
+        // const data = { name: 'example' };
+        // fetch(url, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(data)
+        // })
+        // .then( response => response.json() ) 
+        // .then( data => console.log("Sucesss", data) )
+        // .catch( error => console.log('Error:', error) )
+        fetch('http://localhost:8000/api/items', {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({name:'rl'}),
+        })
+            .then(response => {
+                // if (!response.ok) throw new Error(response.statusText)
+                return response.text()
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch((error) => {
+                // console.error(error);
+                ;
+            });
+    </script>
+</body>
+
+</html>

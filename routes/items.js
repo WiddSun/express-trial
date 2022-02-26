@@ -4,7 +4,7 @@ const express = require('express')
 const router = express.Router()
 //用一个数组暂时代替数据库来存数据
 let items = [
-    { id: 1, name: 'routerle' },
+    { id: 1, name: 'apple' },
     { id: 2, name: 'orange' },
     { id: 3, name: 'banana' },
 ]
@@ -40,7 +40,7 @@ router.put('/:id', (req, res) => {
     let item = items.find(i => i.id == req.params.id)
     if (!item) return res.status(404).send('no such item')
     let { error } = validateItem(req.body) 
-    if (error) return res.status(400).send(error.details[0].message)
+    if (error) return res.status(200).send(error.details[0].message)
     //项目存在,且提交的数据合法,执行赋值更新操作即可
     item.name = req.body.name
     res.send('item updated successfully')
