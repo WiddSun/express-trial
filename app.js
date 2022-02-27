@@ -1,7 +1,4 @@
- //启用debug模块, 代替console.log, 设置DEBUG环境变量来控制输出哪些调试信息, 
- //export DEBUG='app:startup'; export DEBUG='app:startup,app:db'; export DEBUG='app:*', 通过设置不同DEBUG的值来查看不同的调试信息
-const startupDebugger = require('debug')('app:startup')
-const dbDebuger = require('debug')('app:db')
+const debug = require('debug')('app:startup') //替代console.log,用于调试,通过设置export DEBUG='app:startup'启用
 const config = require('config')
 const morgan = require('morgan')
 const items = require('./routes/items')
@@ -30,11 +27,10 @@ app.use(helmet())
 //获取node开发环境的变量, 借此根据不同运行环境启用不同中间件 使用process.env.NODE_ENV=='development'获取NODE_ENV的值
 //app.get('env')也是获取NODE_ENV的值, 区别是,若NODE_ENV未设置,则app.get('env')默认是development
  if (app.get('env') == 'development') {
-    startupDebugger('morgan enabled')
+    debug('morgan enabled')
     app.use(morgan('tiny'))  //用来记日志的,参数用来指定记录的详略程度, 有损性能,测试开发环境使用
  }
 
- dbDebuger('Connected to the database')
 
  /*
  config该模块通过调用app.get('env')来获取NODE_ENV的值来加载./config目录下同名的json配置文件(先加载的default.json,再加载同名配置文件,若设置的值没有对应的配置文件则会报错)
