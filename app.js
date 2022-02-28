@@ -41,13 +41,13 @@ app.use(helmet())
 */
 console.log("Application Name: " + config.get('name'))
 console.log("Mail Server: " + config.get('mail.host'))
-try {
-    console.log('Mail Password: ' + config.get('mail.password'))
-}
-catch (e) {
-    console.error(e.message, '\n提示: 先设置mail_password这个环境变量然后再运行')
-    process.exit(1)
-}
+// try {
+//     console.log('Mail Password: ' + config.get('mail.password'))
+// }
+// catch (e) {
+//     console.error(e.message, '\n提示: 先设置mail_password这个环境变量然后再运行')
+//     process.exit(1)
+// }
 
 
 
