@@ -2,10 +2,11 @@ const mongoose = require('mongoose')
 const debug = require('debug')('app:startup') //替代console.log,用于调试,通过设置export DEBUG='app:startup'启用
 const config = require('config')
 const morgan = require('morgan')
-const items = require('./routes/items')
-const home = require('./routes/home')
 const falange = require('./middleware/falange')
 const helmet = require('helmet')
+const item = require('./routes/item')
+const home = require('./routes/home')
+const user = require('./routes/user')
 const express = require('express')
 
 const app = express()
@@ -61,9 +62,9 @@ app.use(falange)
 
 
 //使用中间件的方式来调用分路由器处理请求; 集中式的总路由,到具体各个分路由中的分散路由,兼顾两种风格
-app.use('/api/items', items)
 app.use('/', home)
-
+app.use('/api/items', item)
+app.use('/api/users', user)
 
 const port = process.env.PORT || 8000
 app.listen(port, () => console.log(`Listening on port ${port}...`))

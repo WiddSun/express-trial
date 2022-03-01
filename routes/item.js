@@ -1,18 +1,7 @@
-const mongoose = require('mongoose')
-const Joi = require('joi')  //导入joi模块,做input validaion
 const express = require('express')
+const {Item, validate} = require('../models/item')
 
 const router = express.Router()
-
-const Item = mongoose.model('Item', new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        minlength: 3,
-        maxlength: 10,
-    }
-}))
-
 
 router.get('/', async (req, res) => {
     let items = await Item.find().sort('name')
@@ -35,7 +24,7 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
     //先做input validatiion
-    let { error } = validateItem(req.body) //对象解构赋值, es6的语法
+    let { error } = validate(req.body) //对象解构赋值, es6的语法
     if (error) return res.status(400).send(error.details[0].message)
 
     //save posted data 
@@ -51,7 +40,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         //先做input validation
-        let { error } = validateItem(req.body)
+        let { error } = validate(req.body)
         if (error) return res.status(400).send(error.details[0].message)
 
         //输入验证通过,再发给数据库做更新 
@@ -81,17 +70,6 @@ router.delete('/:id', async (req, res) => {
     }
 
 })
-
-
-function validateItem(item) {
-    let schema = {
-        name: Joi.string()
-            .min(3)
-            .max(10)
-            .required()
-    }
-    return Joi.validate(item, schema)
-}
 
 
 module.exports = router
