@@ -1,49 +1,84 @@
+const mongoose = require('mongoose')
 const Joi = require('joi')  //导入joi模块,做input validaion
 const express = require('express')
 
 const router = express.Router()
-//用一个数组暂时代替数据库来存数据
-let items = [
-    { id: 1, name: 'apple' },
-    { id: 2, name: 'orange' },
-    { id: 3, name: 'banana' },
-]
 
-router.get('/', (req, res) => {
+const Item = mongoose.model('Item', new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        minlength: 3,
+        maxlength: 10,
+    }
+}))
+
+
+router.get('/', async (req, res) => {
+    let items = await Item.find().sort('name')
     res.send(items)
 })
 
 
-router.get('/:id', (req, res) => {
-    let item = items.find(i => i.id == req.params.id)
-    if (!item) return res.status(404).send('no such item')
+router.get('/:id', async (req, res) => {
+    try {
+        let item = await Item.findById(req.params.id)
+        if (!item) return res.status(404).send('no such item')
+        res.send(item)
+    }
+    catch (err) {
+        // 捕获 CastError: Cast to ObjectId failed 
+        return res.status(404).send('no such item')
+    }
+})
+
+
+router.post('/', async (req, res) => {
+    //先做input validatiion
+    let { error } = validateItem(req.body) //对象解构赋值, es6的语法
+    if (error) return res.status(400).send(error.details[0].message)
+
+    //save posted data 
+    let item = new Item({ name: req.body.name })
+    item = await item.save()
+
+    //发送响应报文, 将新增的数据项也发回,至于实际生产环境中响应体到底该放啥内容,以及是否在其中启用自定义状态码等,有待进一步确认
+    res.status(201)
     res.send(item)
 })
 
 
-router.post('/', (req, res) => {
-    let { error } = validateItem(req.body) //对象解构赋值, es6的语法
-    if (error) return res.status(400).send(error.details[0].message)
-    //save posted data 
-    let item = {
-        id: items.length + 1,
-        name: req.body.name,
+router.put('/:id', async (req, res) => {
+    try {
+        //先做input validation
+        let { error } = validateItem(req.body)
+        if (error) return res.status(400).send(error.details[0].message)
+
+        //输入验证通过,再发给数据库做更新 
+        let item = await Item.findByIdAndUpdate(req.params.id,
+            { name: req.body.name },
+            { new: true })
+        if (!item) return res.status(404).send('no such item')
+
+        //更新成功, echo新增的数据项
+        res.send(item)
     }
-    items.push(item)
-    res.status(201)
-    res.send("item created successfully")
+    catch (err) {
+        return res.status(404).send('no such item')
+    }
+
 })
 
 
-router.put('/:id', (req, res) => {
-    //先验证要修改的项目是否存在, 不存在则返回404,存在则下一步, 复制相应get请求代码即可
-    let item = items.find(i => i.id == req.params.id)
-    if (!item) return res.status(404).send('no such item')
-    let { error } = validateItem(req.body) 
-    if (error) return res.status(200).send(error.details[0].message)
-    //项目存在,且提交的数据合法,执行赋值更新操作即可
-    item.name = req.body.name
-    res.send('item updated successfully')
+router.delete('/:id', async (req, res) => {
+    try {
+        let item = await Item.findByIdAndDelete(req.params.id)
+        if (!item) return res.status(404).send('no such item')
+        res.send(item)
+    }
+    catch (err) {
+        return res.status(404).send('no such item')
+    }
 
 })
 
@@ -52,21 +87,11 @@ function validateItem(item) {
     let schema = {
         name: Joi.string()
             .min(3)
-            .alphanum()
+            .max(10)
             .required()
     }
     return Joi.validate(item, schema)
 }
 
-
-router.delete('/:id', (req, res) => {
-    //先验证所改项目是否存在
-    let item = items.find(i => i.id == req.params.id)
-    if (!item) return res.status(404).send('no such item') 
-    //项目存在,执行删除操作
-    let index = items.indexOf(item)
-    items.splice(index, 1) //splice用法从指定位置删除n个元素,并返回所删除元素的数组
-    res.send(`item ${req.params.id} delete`)
-})
 
 module.exports = router

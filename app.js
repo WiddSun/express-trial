@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const debug = require('debug')('app:startup') //替代console.log,用于调试,通过设置export DEBUG='app:startup'启用
 const config = require('config')
 const morgan = require('morgan')
@@ -8,6 +9,10 @@ const helmet = require('helmet')
 const express = require('express')
 
 const app = express()
+
+mongoose.connect('mongodb://localhost/test')
+   .then(() => console.log('Connected to MongoDB...'))
+   .catch(err => console.error(err.message))
 
 //设置模版引擎, 并设置模版文件的存放目录,用于主页的渲染
 app.set('view engine', 'pug')
