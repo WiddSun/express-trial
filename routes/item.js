@@ -58,6 +58,10 @@ router.put('/:id', async (req, res) => {
 
 })
 
+router.delete('/', async (req, res) => {
+        let item = await Item.deleteMany()
+        res.send(item)
+})
 
 router.delete('/:id', async (req, res) => {
     try {
